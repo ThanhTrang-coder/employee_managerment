@@ -1,16 +1,14 @@
 package edu.hanu.employeemanagementsystem.db;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.hanu.employeemanagementsystem.models.Employee;
-import edu.hanu.employeemanagementsystem.models.Experience;
-import edu.hanu.employeemanagementsystem.models.Fresher;
-import edu.hanu.employeemanagementsystem.models.Intern;
 
 @Dao
 public interface EmployeeDao {
@@ -19,4 +17,10 @@ public interface EmployeeDao {
 
     @Query("SELECT * FROM employee")
     List<Employee> getListEmployee();
+
+    @Update
+    void updateEmployee(Employee employee);
+
+    @Delete
+    void deleteEmployee(Employee employee);
 }

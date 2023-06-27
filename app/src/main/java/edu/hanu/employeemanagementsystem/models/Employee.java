@@ -23,21 +23,12 @@ public class Employee implements Parcelable{
     public String birthDay;
     public String phone;
     public String email;
-    public String employeeType;
-    @Ignore
-    public Certificate certificate;
 
-    public Employee(String fullName, String birthDay, String phone, String email, String employeeType) {
+    public Employee(String fullName, String birthDay, String phone, String email) {
         this.fullName = fullName;
         this.birthDay = birthDay;
         this.phone = phone;
         this.email = email;
-        this.employeeType = employeeType;
-    }
-
-    public Employee(String fullName, String birthDay, String phone, String email, String employeeType, Certificate certificate) {
-        this(fullName, birthDay, phone, email, employeeType);
-        this.certificate = certificate;
     }
 
     public Employee() {
@@ -49,8 +40,6 @@ public class Employee implements Parcelable{
         birthDay = in.readString();
         phone = in.readString();
         email = in.readString();
-        employeeType = in.readString();
-        certificate = (Certificate) in.readParcelable(Certificate.class.getClassLoader());
     }
 
     public static final Creator<Employee> CREATOR = new Creator<Employee>() {
@@ -130,26 +119,6 @@ public class Employee implements Parcelable{
         }
     }
 
-    public String getEmployeeType() {
-        return employeeType;
-    }
-
-    public void setEmployeeType(String employeeType) throws InvalidEmployeeTypeException {
-        if(employeeType.isEmpty()) {
-            throw new InvalidEmployeeTypeException("EmployeeType is required.");
-        } else {
-            this.employeeType = employeeType;
-        }
-    }
-
-    public Certificate getCertificate() {
-        return certificate;
-    }
-
-    public void setCertificate(Certificate certificate) {
-        this.certificate = certificate;
-    }
-
     @Override
     public String toString() {
         return "Employee{" +
@@ -157,10 +126,7 @@ public class Employee implements Parcelable{
                 ", fullName='" + fullName + '\'' +
                 ", birthDay='" + birthDay + '\'' +
                 ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
-                ", employeeType='" + employeeType + '\'' +
-                ", certificate=" + certificate +
-                '}';
+                ", email='" + email + '\'' + '\'' + '}';
     }
 
     @Override
@@ -174,7 +140,5 @@ public class Employee implements Parcelable{
         parcel.writeString(birthDay);
         parcel.writeString(phone);
         parcel.writeString(email);
-        parcel.writeString(employeeType);
-        parcel.writeParcelable(certificate, flags);
     }
 }

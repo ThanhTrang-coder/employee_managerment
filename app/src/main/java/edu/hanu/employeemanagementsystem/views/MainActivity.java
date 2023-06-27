@@ -7,37 +7,37 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.hanu.employeemanagementsystem.EmployeeListener;
 import edu.hanu.employeemanagementsystem.R;
 import edu.hanu.employeemanagementsystem.adapters.EmployeeAdapter;
+import edu.hanu.employeemanagementsystem.db.EmployeeDb;
 import edu.hanu.employeemanagementsystem.exception.InvalidBirthdayException;
 import edu.hanu.employeemanagementsystem.exception.InvalidEmailException;
-import edu.hanu.employeemanagementsystem.exception.InvalidEmployeeTypeException;
 import edu.hanu.employeemanagementsystem.exception.InvalidFullNameException;
 import edu.hanu.employeemanagementsystem.exception.InvalidPhoneException;
 import edu.hanu.employeemanagementsystem.models.Employee;
-import edu.hanu.employeemanagementsystem.models.Experience;
-import edu.hanu.employeemanagementsystem.models.Fresher;
-import edu.hanu.employeemanagementsystem.models.Intern;
 
 public class MainActivity extends AppCompatActivity implements EmployeeListener {
     private static int UPDATE_REQUEST_CODE = 6969;
     private static int ADD_REQUEST_CODE = 1010;
-    private int position;
     private EmployeeAdapter adapter;
-    //private EmployeeDatabase database;
     SearchView searchView;
-    TextView textView;
-    public static ArrayList<Employee> employees = new ArrayList<>();
+    private List<Employee> employees;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +45,13 @@ public class MainActivity extends AppCompatActivity implements EmployeeListener 
         setContentView(R.layout.activity_main);
 
         RecyclerView recycleView = findViewById(R.id.recycleView);
-
         searchView = findViewById(R.id.search);
-        textView = findViewById(R.id.textView);
 
         searchEmployee();
 
         adapter = new EmployeeAdapter(MainActivity.this, this);
-        //database = EmployeeDatabase.getInstance(this);
-
-        //employees = database.employeeDAO.getListEmployee();
-        //adapter.setData(employees);
+        employees = new ArrayList<>();
+        adapter.setData(employees);
 
         LinearLayoutManager manager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recycleView.setLayoutManager(manager);
@@ -84,35 +80,46 @@ public class MainActivity extends AppCompatActivity implements EmployeeListener 
     }
 
     @Override
-    public void employeeClick(Employee employee, int index) {
+    public void updateEmployee(Employee employee) {
         Intent intent = new Intent(this, UpdateActivity.class);
-        position = index;
-        intent.putExtra("employee", employee);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("updateEmployee", employee);
+        intent.putExtras(bundle);
         startActivityForResult(intent, UPDATE_REQUEST_CODE);
+    }
+
+    @Override
+    public void deleteEmployee(Employee employee) {
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm delete employee")
+                .setMessage("Are you sure?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        EmployeeDb.getInstance(getApplicationContext()).getEmployeeDao().deleteEmployee(employee);
+                        Toast.makeText(MainActivity.this, "Delete employee successfully!", Toast.LENGTH_SHORT).show();
+                        employees = EmployeeDb.getInstance(getApplicationContext()).getEmployeeDao().getListEmployee();
+                        adapter.setData(employees);
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == UPDATE_REQUEST_CODE && resultCode == RESULT_OK) {
-            if(data == null) {
-                Toast.makeText(this, "Do not update", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "updated x2", Toast.LENGTH_SHORT).show();
-                getAndUpdateInformation(data);
+        if(requestCode == UPDATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            loadData();
+        }
+        else if(requestCode == ADD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            loadData();
+        }
+    }
 
-            }
-        }
-        else if(requestCode == ADD_REQUEST_CODE && resultCode == RESULT_OK) {
-            if(data == null) {
-                Toast.makeText(this, "Do not update", Toast.LENGTH_SHORT).show();
-            } else {
-                employees = data.getParcelableArrayListExtra("employees");
-                adapter.setData(employees);
-                textView.setText(employees+"");
-                //Toast.makeText(this, employees+"", Toast.LENGTH_LONG).show();
-            }
-        }
+    private void loadData() {
+        employees = EmployeeDb.getInstance(this).getEmployeeDao().getListEmployee();
+        adapter.setData(employees);
     }
 
     private void searchEmployee() {
@@ -130,41 +137,5 @@ public class MainActivity extends AppCompatActivity implements EmployeeListener 
             }
         });
     }
-
-    private void getAndUpdateInformation(Intent data) {
-        Employee employee = (Employee) data.getParcelableExtra("employee1");
-        if(employee.getEmployeeType().equals("0")) {
-            Experience experience = (Experience) employee;
-
-            employees.set(position, experience);
-            adapter.notifyDataSetChanged();
-        } else if(employee.getEmployeeType().equals("1")) {
-            Fresher fresher = (Fresher) employee;
-            setData(fresher);
-
-            employees.set(position, fresher);
-            adapter.notifyDataSetChanged();
-        } else if(employee.getEmployeeType().equals("2")) {
-            Intern intern = (Intern) employee;
-            setData(intern);
-
-            employees.set(position, intern);
-            adapter.notifyDataSetChanged();
-        }
-    }
-
-    private void setData(Employee employee){
-        try {
-            employee.setFullName(employee.getFullName());
-            employee.setBirthDay(employee.getBirthDay());
-            employee.setPhone(employee.getPhone());
-            employee.setEmail(employee.getEmail());
-            employee.setEmployeeType(employee.getEmployeeType());
-        } catch (InvalidFullNameException | InvalidBirthdayException | InvalidPhoneException |
-                 InvalidEmailException | InvalidEmployeeTypeException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
 }
