@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -29,10 +30,13 @@ import edu.hanu.employeemanagementsystem.models.Fresher;
 import edu.hanu.employeemanagementsystem.models.Intern;
 
 public class MainActivity extends AppCompatActivity implements EmployeeListener {
-    private static int REQUEST_CODE = 6969;
+    private static int UPDATE_REQUEST_CODE = 6969;
+    private static int ADD_REQUEST_CODE = 1010;
     private int position;
     private EmployeeAdapter adapter;
+    //private EmployeeDatabase database;
     SearchView searchView;
+    TextView textView;
     public static ArrayList<Employee> employees = new ArrayList<>();
 
     @Override
@@ -43,10 +47,15 @@ public class MainActivity extends AppCompatActivity implements EmployeeListener 
         RecyclerView recycleView = findViewById(R.id.recycleView);
 
         searchView = findViewById(R.id.search);
+        textView = findViewById(R.id.textView);
 
         searchEmployee();
 
-        adapter = new EmployeeAdapter(MainActivity.this, employees, this);
+        adapter = new EmployeeAdapter(MainActivity.this, this);
+        //database = EmployeeDatabase.getInstance(this);
+
+        //employees = database.employeeDAO.getListEmployee();
+        //adapter.setData(employees);
 
         LinearLayoutManager manager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recycleView.setLayoutManager(manager);
@@ -69,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements EmployeeListener 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.menu_add){
             Intent intent = new Intent(MainActivity.this, AddActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, ADD_REQUEST_CODE);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -79,19 +88,29 @@ public class MainActivity extends AppCompatActivity implements EmployeeListener 
         Intent intent = new Intent(this, UpdateActivity.class);
         position = index;
         intent.putExtra("employee", employee);
-        startActivityForResult(intent, REQUEST_CODE);
+        startActivityForResult(intent, UPDATE_REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+        if(requestCode == UPDATE_REQUEST_CODE && resultCode == RESULT_OK) {
             if(data == null) {
                 Toast.makeText(this, "Do not update", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "updated x2", Toast.LENGTH_SHORT).show();
                 getAndUpdateInformation(data);
 
+            }
+        }
+        else if(requestCode == ADD_REQUEST_CODE && resultCode == RESULT_OK) {
+            if(data == null) {
+                Toast.makeText(this, "Do not update", Toast.LENGTH_SHORT).show();
+            } else {
+                employees = data.getParcelableArrayListExtra("employees");
+                adapter.setData(employees);
+                textView.setText(employees+"");
+                //Toast.makeText(this, employees+"", Toast.LENGTH_LONG).show();
             }
         }
     }

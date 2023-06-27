@@ -4,8 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+@Entity
 public class Intern extends Employee implements Parcelable {
+    @PrimaryKey
+    private int internId;
+    private int employeeId;
     private String major;
     private int semester;
     private String universityName;
@@ -22,6 +28,10 @@ public class Intern extends Employee implements Parcelable {
         this.universityName = universityName;
     }
 
+    public Intern(String name, String birthDay, String phone, String email, String employeeType) {
+        super(name, birthDay, phone, email, employeeType);
+    }
+
     protected Intern(Parcel in) {
         fullName = in.readString();
         birthDay = in.readString();
@@ -31,6 +41,7 @@ public class Intern extends Employee implements Parcelable {
         major = in.readString();
         semester = in.readInt();
         universityName = in.readString();
+        certificate = (Certificate) in.readParcelable(Certificate.class.getClassLoader());
     }
 
     public static final Creator<Intern> CREATOR = new Creator<Intern>() {
@@ -44,6 +55,22 @@ public class Intern extends Employee implements Parcelable {
             return new Intern[size];
         }
     };
+
+    public int getInternId() {
+        return internId;
+    }
+
+    public void setInternId(int internId) {
+        this.internId = internId;
+    }
+
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
+    }
 
     public String getMajor() {
         return major;
@@ -102,5 +129,6 @@ public class Intern extends Employee implements Parcelable {
         parcel.writeString(major);
         parcel.writeInt(semester);
         parcel.writeString(universityName);
+        parcel.writeParcelable(certificate, i);
     }
 }

@@ -33,13 +33,16 @@ public class EmployeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ArrayList<Employee> listTemp;
     private EmployeeListener listener;
 
-    public EmployeeAdapter(Context context, ArrayList<Employee> list, EmployeeListener listener) {
+    public EmployeeAdapter(Context context, EmployeeListener listener) {
         this.context = context;
-        this.list = list;
         this.listener = listener;
-        this.listTemp = list;
     }
 
+    public void setData(ArrayList<Employee> list) {
+        this.list = list;
+        this.listTemp = list;
+        notifyDataSetChanged();
+    }
     @Override
     public int getItemViewType(int position) {
         if(list.get(position) instanceof Experience) {
@@ -75,7 +78,6 @@ public class EmployeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
         switch (getItemViewType(position)) {
             case EXPERIENCE:
                 if(list.get(position) instanceof Experience) {
@@ -90,7 +92,6 @@ public class EmployeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     experienceHolder.tvProSkill.setText("Professional skill: " + experience.getProSkill());
                     experienceHolder.bindClick(experience, position);
                 }
-
                 break;
             case FRESHER:
                 if(list.get(position) instanceof Fresher) {
@@ -106,7 +107,6 @@ public class EmployeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     fresherHolder.tvEducation.setText("Education: " + fresher.getEducation());
                     fresherHolder.bindClick(fresher, position);
                 }
-
                 break;
             case INTERN:
                 if(list.get(position) instanceof Intern) {
@@ -122,10 +122,8 @@ public class EmployeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     internHolder.tvUniversityName.setText("University name: " + intern.getUniversityName());
                     internHolder.bindClick(intern, position);
                 }
-
                 break;
         }
-
     }
 
     @Override
@@ -189,6 +187,13 @@ public class EmployeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         public void bindClick(Experience experience, int position) {
+//            tvName.setText(experience.getFullName());
+//            tvBirthDay.setText("Birthday: " + experience.getBirthDay());
+//            tvPhone.setText("Phone: " + experience.getPhone());
+//            tvEmail.setText("Email: " + experience.getEmail());
+//            tvExpInYear.setText("Experience in year: "+experience.getExpInYear());
+//            tvProSkill.setText("Professional skill: " + experience.getProSkill());
+
             btnEdit.setOnClickListener(view -> {
                 listener.employeeClick(experience, position );
             });
@@ -230,6 +235,8 @@ public class EmployeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         public void bindClick(Fresher fresher, int position) {
+
+
             btnEdit.setOnClickListener(view -> {
                 listener.employeeClick(fresher, position );
             });
@@ -271,6 +278,14 @@ public class EmployeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         public void bindClick(Intern intern, int position) {
+//            tvName.setText(intern.getFullName());
+//            tvBirthDay.setText("Birthday: " + intern.getBirthDay());
+//            tvPhone.setText("Phone: " + intern.getPhone());
+//            tvEmail.setText("Email: " + intern.getEmail());
+//            tvMajor.setText("Major: " + intern.getMajor());
+//            tvSemester.setText("Semester: " + intern.getSemester());
+//            tvUniversityName.setText("University name: " + intern.getUniversityName());
+
             btnEdit.setOnClickListener(view -> {
                 listener.employeeClick(intern, position );
             });

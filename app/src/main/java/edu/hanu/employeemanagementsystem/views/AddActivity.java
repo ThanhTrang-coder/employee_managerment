@@ -3,16 +3,21 @@ package edu.hanu.employeemanagementsystem.views;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.hanu.employeemanagementsystem.EmployeeType;
 import edu.hanu.employeemanagementsystem.R;
+import edu.hanu.employeemanagementsystem.db.EmployeeDb;
 import edu.hanu.employeemanagementsystem.exception.InvalidBirthdayException;
 import edu.hanu.employeemanagementsystem.exception.InvalidEmailException;
 import edu.hanu.employeemanagementsystem.exception.InvalidEmployeeTypeException;
@@ -31,7 +36,7 @@ public class AddActivity extends AppCompatActivity{
             edtGradDate, edtGradRank, edtGradEdu, edtMajor, edtSemester, edtUniversityName, edtCertificateName, edtCertificateRank, edtCertificateDate;
     private Button btnContinue, btnAdd, btnCancel;
 
-    private ArrayList<Employee> employees = new ArrayList<>();
+    private List<Employee> employees = new ArrayList<>();
 
     private Employee experience = new Experience();
     private Employee fresher = new Fresher();
@@ -42,7 +47,7 @@ public class AddActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
-        this.employees.addAll(MainActivity.employees);
+//        this.employees.addAll(MainActivity.employees);
 
         initView();
 
@@ -139,7 +144,8 @@ public class AddActivity extends AppCompatActivity{
                 experience1.setProSkill(proSkill);
                 experience1.setCertificate(new Certificate(certificateName, certificateRank, certificateDate));
 
-                employees.add(experience1);
+                //employees.add(experience1);
+
                 break;
             case "1":
                 Fresher fresher1 = (Fresher) fresher;
@@ -152,7 +158,7 @@ public class AddActivity extends AppCompatActivity{
                 fresher1.setEducation(gradEdu);
                 fresher1.setCertificate(new Certificate(certificateName, certificateRank, certificateDate));
 
-                employees.add(fresher1);
+                //employees.add(fresher1);
                 break;
             case "2":
                 Intern intern1 = (Intern) intern;
@@ -165,12 +171,16 @@ public class AddActivity extends AppCompatActivity{
                 intern1.setUniversityName(universityName);
                 intern1.setCertificate(new Certificate(certificateName, certificateRank, certificateDate));
 
-                employees.add(intern1);
+                //employees.add(intern1);
                 break;
         }
 
-        MainActivity.employees.clear();
-        MainActivity.employees.addAll(employees);
+//        MainActivity.employees.clear();
+//        MainActivity.employees.addAll(employees);
+        Intent intent = new Intent();
+        employees.addAll(EmployeeDb.getInstance(this).getEmployeeDao().getListEmployee());
+        intent.putParcelableArrayListExtra("employees", (ArrayList<? extends Parcelable>) employees);
+        setResult(RESULT_OK, intent);
         finish();
     }
 
@@ -181,6 +191,17 @@ public class AddActivity extends AppCompatActivity{
         email = edtEmail.getText().toString();
         employeeType = edtEmployeeType.getText().toString();
         getCertificate();
+
+        if(employeeType.equals("0")) {
+            Experience experience1 = (Experience) new Experience(name, birthDay, phone, email, employeeType);
+            EmployeeDb.getInstance(this).getEmployeeDao().insertEmployee(experience1);
+        } else if (employeeType.equals("1")) {
+            Fresher fresher1 = (Fresher) new Fresher(name, birthDay, phone, email, employeeType);
+            EmployeeDb.getInstance(this).getEmployeeDao().insertEmployee( fresher1);
+        } else if (employeeType.equals("2")) {
+            Intern intern1 = (Intern) new Intern(name, birthDay, phone, email, employeeType);
+            EmployeeDb.getInstance(this).getEmployeeDao().insertEmployee( intern1);
+        }
     }
 
     private void getCertificate() {

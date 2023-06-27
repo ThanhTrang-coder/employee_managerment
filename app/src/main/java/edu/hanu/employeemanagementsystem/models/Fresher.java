@@ -4,10 +4,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import edu.hanu.employeemanagementsystem.models.Certificate;
 
+@Entity
 public class Fresher extends Employee implements Parcelable{
+    @PrimaryKey
+    private int fresherId;
+    private int employeeId;
     private String graduationDate;
     private int graduationRank;
     private String graduationEdu;
@@ -24,6 +30,10 @@ public class Fresher extends Employee implements Parcelable{
         this.graduationEdu = graduationEdu;
     }
 
+    public Fresher(String name, String birthDay, String phone, String email, String employeeType) {
+        super(name, birthDay, phone, email, employeeType);
+    }
+
     protected Fresher(Parcel in) {
         fullName = in.readString();
         birthDay = in.readString();
@@ -33,6 +43,7 @@ public class Fresher extends Employee implements Parcelable{
         graduationDate = in.readString();
         graduationRank = in.readInt();
         graduationEdu = in.readString();
+        certificate = (Certificate) in.readParcelable(Certificate.class.getClassLoader());
     }
 
     public static final Creator<Fresher> CREATOR = new Creator<Fresher>() {
@@ -46,6 +57,30 @@ public class Fresher extends Employee implements Parcelable{
             return new Fresher[size];
         }
     };
+
+    public int getFresherId() {
+        return fresherId;
+    }
+
+    public void setFresherId(int fresherId) {
+        this.fresherId = fresherId;
+    }
+
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getGraduationEdu() {
+        return graduationEdu;
+    }
+
+    public void setGraduationEdu(String graduationEdu) {
+        this.graduationEdu = graduationEdu;
+    }
 
     public String getGraduationDate() {
         return graduationDate;
@@ -104,5 +139,6 @@ public class Fresher extends Employee implements Parcelable{
         parcel.writeString(graduationDate);
         parcel.writeInt(graduationRank);
         parcel.writeString(graduationEdu);
+        parcel.writeParcelable(certificate, i);
     }
 }
