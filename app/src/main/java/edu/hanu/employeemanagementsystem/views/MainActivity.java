@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,9 +82,9 @@ public class MainActivity extends AppCompatActivity implements EmployeeListener 
 
     @Override
     public void updateEmployee(Employee employee) {
-        Intent intent = new Intent(this, UpdateActivity.class);
+        Intent intent = new Intent(MainActivity.this, UpdateActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelable("updateEmployee", employee);
+        bundle.putSerializable("employee", employee);
         intent.putExtras(bundle);
         startActivityForResult(intent, UPDATE_REQUEST_CODE);
     }

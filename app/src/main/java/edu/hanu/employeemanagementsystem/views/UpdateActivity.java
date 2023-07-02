@@ -28,9 +28,16 @@ public class UpdateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
 
-        initView();
+        edtName = findViewById(R.id.edtName);
+        edtBirthDay = findViewById(R.id.edtBirthDay);
+        edtPhone = findViewById(R.id.edtPhone);
+        edtEmail = findViewById(R.id.edtEmail);
 
-        employee = (Employee) getIntent().getExtras().get("updateEmployee");
+        //button
+        btnUpdate = findViewById(R.id.btnUpdate);
+        btnCancel = findViewById(R.id.btnCancel);
+
+        employee = (Employee) getIntent().getExtras().get("employee");
         setGeneralInformation(employee);
 
         btnCancel.setOnClickListener(view -> {
@@ -65,17 +72,6 @@ public class UpdateActivity extends AppCompatActivity {
         Intent intent = new Intent();
         setResult(Activity.RESULT_OK, intent);
         finish();
-    }
-
-    private void initView() {
-        edtName = findViewById(R.id.edtName);
-        edtBirthDay = findViewById(R.id.edtBirthDay);
-        edtPhone = findViewById(R.id.edtPhone);
-        edtEmail = findViewById(R.id.edtEmail);
-
-        //button
-        btnUpdate = findViewById(R.id.btnUpdate);
-        btnCancel = findViewById(R.id.btnCancel);
     }
 
     private void setGeneralInformation(Employee employee) {

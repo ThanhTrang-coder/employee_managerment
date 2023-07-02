@@ -8,6 +8,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 import edu.hanu.employeemanagementsystem.EmployeeListener;
 import edu.hanu.employeemanagementsystem.exception.InvalidBirthdayException;
 import edu.hanu.employeemanagementsystem.exception.InvalidEmailException;
@@ -16,7 +18,7 @@ import edu.hanu.employeemanagementsystem.exception.InvalidFullNameException;
 import edu.hanu.employeemanagementsystem.exception.InvalidPhoneException;
 
 @Entity
-public class Employee implements Parcelable{
+public class Employee implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private int employeeId = 0;
     public String fullName;
@@ -33,26 +35,6 @@ public class Employee implements Parcelable{
 
     public Employee() {
     }
-
-
-    protected Employee(Parcel in) {
-        fullName = in.readString();
-        birthDay = in.readString();
-        phone = in.readString();
-        email = in.readString();
-    }
-
-    public static final Creator<Employee> CREATOR = new Creator<Employee>() {
-        @Override
-        public Employee createFromParcel(Parcel in) {
-            return new Employee(in);
-        }
-
-        @Override
-        public Employee[] newArray(int size) {
-            return new Employee[size];
-        }
-    };
 
     public int getEmployeeId() {
         return employeeId;
@@ -127,18 +109,5 @@ public class Employee implements Parcelable{
                 ", birthDay='" + birthDay + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' + '\'' + '}';
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull Parcel parcel, int flags) {
-        parcel.writeString(fullName);
-        parcel.writeString(birthDay);
-        parcel.writeString(phone);
-        parcel.writeString(email);
     }
 }
